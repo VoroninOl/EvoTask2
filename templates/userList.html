@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Evo Task #2</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/app.css')}}">
+</head>
+<body>
+    <div style="margin: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.5); margin-left: auto;
+    margin-right: auto; width: 50%; display: flex;
+    flex-direction: column;">
+        {% for user in users %}
+        <button class="btn btn-primary">{{ user[0] + ' ' + user[1] }}</button>
+        {% endfor %}
+        <button class="btn btn-primary" onclick="history.back()" >Back</button>
+    </div>
+</body>
+</html>
