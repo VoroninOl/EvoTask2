@@ -24,4 +24,9 @@ Link to Heroku:
 Link to Dockerhub:
  - https://hub.docker.com/repository/docker/voroninol/evotask
 
+To run docker image use command:
+ - docker run -p 4000:4000 --name evotask voroninol/evotask
+
+It will run on: localhost:4000
+
 Thx for reading =)
