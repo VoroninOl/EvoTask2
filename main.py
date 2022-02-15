@@ -1,23 +1,26 @@
-import sqlite3
 from flask import Flask, render_template
-from flask import redirect, request, url_for, jsonify
+from flask import request, url_for, jsonify
+from flask_sqlalchemy import SQLAlchemy
 import json
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-db = sqlite3.connect('database/server.db')
-sql = db.cursor()
 
-sql.execute("""CREATE TABLE IF NOT EXISTS users(
-    name TEXT,
-    surname TEXT
-)""")
+class User(db.Model):
+    """Model for user
+    Columns: name, surname"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    surname = db.Column(db.String(50), nullable=False)
 
-db.commit()
+    def __repr__(self):
+        return '<User %r>' % self.id
 
-db.close()
 
-@app.route('/')
+@app.route('/',  methods=['GET', 'POST'])
 def index():
     """Route to render main page"""
     return render_template('index.html')
@@ -29,27 +32,23 @@ def check_user():
     data = json.loads(request.get_data().decode('utf-8'))
     name = data['name']
     surname = data['surname']
-    db_route = sqlite3.connect('database/server.db')
-    sql_route = db_route.cursor()
-    sql_route.execute(f"SELECT * FROM users WHERE name = '{name}' AND surname = '{surname}'")
-    if sql_route.fetchone() is None:
-        sql_route.execute(f"INSERT INTO users VALUES (?, ?)", (name, surname))
-        db_route.commit()
-        db_route.close()
+    users = User.query.all()
+    for user in users:
+        if user.name == name and user.surname == surname:
+            return jsonify({'answer': 'Вже бачилися, {}'.format(name)})
+    user = User(name=name, surname=surname)
+    try:
+        db.session.add(user)
+        db.session.commit()
         return jsonify({'answer': 'Привіт, {} {}'.format(name, surname)})
-    else:
-        db_route.close()
-        return jsonify({'answer': 'Вже бачилися, {}'.format(name)})
-
+    except Exception as ex:
+        return 'Error in adding ' + str(ex)
 
 
 @app.route('/userList', methods=['GET', 'POST'])
 def user_list():
     """Route to render users list page"""
-    db_route = sqlite3.connect('database/server.db')
-    sql_route = db_route.cursor()
-    sql_route.execute("SELECT * FROM users")
-    users = sql_route.fetchall()
+    users = User.query.all()
     return render_template('userList.html', users=users)
 
 

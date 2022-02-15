@@ -2,12 +2,12 @@
 
 
 $('#btn-hello').on('click', () => {
-    if  ($('#input-fname').val() && $('#input-sname').val()){
+    if  ($('#name').val() && $('#surname').val()){
         $.ajax({
             url: 'checkUser',
             method: 'POST',
             dataType: 'json',
-            data: JSON.stringify({'name': $('#input-fname').val(), 'surname': $('#input-sname').val()}),
+            data: JSON.stringify({'name': $('#name').val(), 'surname': $('#surname').val()}),
             success:  function (data){
                 $('#div-warning').fadeIn()
                 $('#lb-answer').text(data['answer'])
@@ -18,7 +18,7 @@ $('#btn-hello').on('click', () => {
         $('#div-warning').fadeIn()
         $('#lb-answer').text('Ви забули щось ввести')
     }
-    
+
 })
 
 
